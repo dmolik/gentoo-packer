@@ -2,9 +2,9 @@
 	"builders": [
 		{
 			"type": "virtualbox-iso",
-			"boot_wait": "3s",
+			"boot_wait": "5s",
 			"boot_command": [
-				"<enter><wait5><wait5>",
+				"<enter><wait8><wait8>",
 				"<enter><wait5><wait5><wait5>",
 				"passwd<enter><wait>",
 				"packer123<enter><wait>packer123<enter>"
@@ -36,13 +36,13 @@
 	"provisioners": [
 		{
 			"type":        "file",
-			"source":      "files/portage-latest.tar.xz",
-			"destination": "/tmp/portage-latest.tar.xz"
+			"source":      "files/stage3-amd64-nomultilib.tar.xz",
+			"destination": "/tmp/stage3-amd64-nomultilib.tar.xz"
 		},
 		{
 			"type":        "file",
-			"source":      "files/stage3-amd64-nomultilib.tar.xz",
-			"destination": "/tmp/stage3-amd64-nomultilib.tar.xz"
+			"source":      "files/portage-latest.tar.xz",
+			"destination": "/tmp/portage-lastest.tar.xz"
 		},
 		{
 			"type": "shell",
