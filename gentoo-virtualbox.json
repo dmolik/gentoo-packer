@@ -16,7 +16,7 @@
 			"ssh_username": "root",
 			"ssh_password": "packer123",
 			"shutdown_command": "poweroff",
-			"disk_size":   4000,
+			"disk_size":   10000,
 			"vboxmanage": [
 				[
 					"modifyvm",
@@ -38,6 +38,11 @@
 			"type":        "file",
 			"source":      "files/stage3-amd64-nomultilib.tar.xz",
 			"destination": "/tmp/stage3-amd64-nomultilib.tar.xz"
+		},
+		{
+			"type":        "file",
+			"source":      "scripts/config.gz",
+			"destination": "/tmp/config.gz"
 		},
 		{
 			"type":        "file",

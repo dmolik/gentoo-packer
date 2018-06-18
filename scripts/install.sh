@@ -61,6 +61,12 @@ DISTDIR="${PORTDIR}/distfiles"
 PKGDIR="${PORTDIR}/packages"
 ' > /mnt/gentoo/etc/portage/make.conf
 
+cat <<<'
+en_US ISO-8859-1
+en_US.UTF-8 UTF-8
+' > /mnt/gentoo/etc/locale.gen
+mv /tmp/config.gz /mnt/gentoo
+
 echo "= BUILDING UTILITIES ===================================================="
 chroot /mnt/gentoo /bin/bash<<EOF
 ln -s /etc/portage/make.conf /etc/make.conf
@@ -70,6 +76,16 @@ emerge --sync
 emerge -1 dev-util/pkgconf
 emerge --rage-clean dev-libs/glib x11-misc/shared-mime-info
 emerge -vuND --with-bdeps=y -1 @world
+emerge @preserved-rebuild
 echo "sys-kernel/gentoo-sources symlink" >> /etc/portage/package.use/kernel
 emerge sys-apps/haveged net-misc/ntp net-misc/dhcpcd app-admin/sudo app-portage/eix app-text/tree sys-process/lsof sys-process/htop app-editors/vim dev-vcs/git sys-boot/grub app-admin/monit app-admin/rsyslog sys-kernel/gentoo-sources sys-process/vixie-cron
+cp /config.gz /usr/src/linux
+cd /usr/src/linux
+gzip -d config
+mv config .config
+make -j4
+make modules_install
+make headers_install
+make install
+
 EOF
