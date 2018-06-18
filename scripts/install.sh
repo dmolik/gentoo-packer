@@ -66,7 +66,7 @@ en_US ISO-8859-1
 en_US.UTF-8 UTF-8
 ' > /mnt/gentoo/etc/locale.gen
 mv /tmp/config.gz /mnt/gentoo
-
+echp "/dev/sda2   /            ext4    noatime,discard      0 1" >  /mnt/gentoo/etc/fstab
 echo "= BUILDING UTILITIES ===================================================="
 chroot /mnt/gentoo /bin/bash<<EOF
 ln -s /etc/portage/make.conf /etc/make.conf
@@ -78,7 +78,7 @@ emerge --rage-clean dev-libs/glib x11-misc/shared-mime-info
 emerge -vuND --with-bdeps=y -1 @world
 emerge @preserved-rebuild
 echo "sys-kernel/gentoo-sources symlink" >> /etc/portage/package.use/kernel
-emerge sys-apps/haveged net-misc/ntp net-misc/dhcpcd app-admin/sudo app-portage/eix app-text/tree sys-process/lsof sys-process/htop app-editors/vim dev-vcs/git sys-boot/grub app-admin/monit app-admin/rsyslog sys-kernel/gentoo-sources sys-process/vixie-cron
+emerge sys-apps/haveged net-misc/ntp net-misc/dhcpcd app-admin/sudo app-portage/eix app-text/tree sys-process/lsof sys-process/htop app-editors/vim dev-vcs/git sys-boot/grub app-admin/monit app-admin/rsyslog sys-kernel/gentoo-sources sys-process/vixie-cron logrotate
 cp /config.gz /usr/src/linux
 cd /usr/src/linux
 gzip -d config
@@ -87,5 +87,21 @@ make -j4
 make modules_install
 make headers_install
 make install
-
+echo "set timeout=0" >> /etc/grub.d/40_custom
+grub-install /dev/sda
+grub2-mkconfig -o /boot/grub/grub.cfg
+useradd -m -G users,wheel gentoo
+echo "gentoo:gentoo12345" | chpasswd
+cd /etc/init.d
+ln -s net.lo net.eth0
+echo "modules=dhcpcd"   >> /etc/conf.d/net
+echo "config_eth0=dhcp" >> /etc/conf.d/net
+touch /etc/udev/rules.d/80-net-name-slot.rules
+/sbin/rc-update add net.eth0   default
+/sbin/rc-update add sshd       default
+/sbin/rc-update add ntpd       default
+/sbin/rc-update add haveged    default
+/sbin/rc-update add vixie-cron default
+/sbin/rc-update add rsyslog    default
+/sbin/rc-update add auditd     default
 EOF
