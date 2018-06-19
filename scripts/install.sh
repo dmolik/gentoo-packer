@@ -26,14 +26,14 @@ mount --rbind /dev  /mnt/gentoo/dev
 
 echo "= UPDATING MAKE.CONF ===================================================="
 
-cat <<<'
+cat > /mnt/gentoo/etc/portage/make.conf << EOF
 CHOST="x86_64-pc-linux-gnu"
 
 CFLAGS="-march=native -O2 -pipe"
-CXXFLAGS="${CFLAGS}"
+CXXFLAGS="\${CFLAGS}"
 ACCEPT_KEYWORDS="~*"
 
-MAKEOPTS="-j16"
+MAKEOPTS="-j${NPROCS}"
 
 LINGUAS="en en_US"
 L10N="en en_US"
@@ -44,29 +44,31 @@ POSTGRES_TARGETS="postgres10"
 CPU_FLAGS_X86="avx avx2 aes mmx sse sse2 ssse3 sse4_1 sse4_2"
 
 SYSTEM="threads jemalloc udev vim-syntax"
-SYSTEM="${SYSTEM} jit pcre pcre-jit -bindist"
-SYSTEM="${SYSTEM} uuid gmp audit"
+SYSTEM="\${SYSTEM} jit pcre pcre-jit -bindist"
+SYSTEM="\${SYSTEM} uuid gmp audit"
 AUTH=""
 NET="curl json"
-NET="${NET} -sslv3 -sslv2"
+NET="\${NET} -sslv3 -sslv2"
 
 LANGS="perl -python"
 DB="lmdb"
 VCS="git"
 
-USE="${USE} ${SYSTEM} ${AUTH} ${LANGS} ${DB} ${VCS} ${NET}"
+USE="\${USE} \${SYSTEM} \${AUTH} \${LANGS} \${DB} \${VCS} \${NET}"
 
 PORTDIR="/usr/portage"
-DISTDIR="${PORTDIR}/distfiles"
-PKGDIR="${PORTDIR}/packages"
-' > /mnt/gentoo/etc/portage/make.conf
+DISTDIR="\${PORTDIR}/distfiles"
+PKGDIR="\${PORTDIR}/packages"
+EOF
 
-cat <<<'
+cat > /mnt/gentoo/etc/locale.gen << EOF
 en_US ISO-8859-1
 en_US.UTF-8 UTF-8
-' > /mnt/gentoo/etc/locale.gen
+EOF
+
 mv /tmp/config.gz /mnt/gentoo
-echp "/dev/sda2   /            ext4    noatime,discard      0 1" >  /mnt/gentoo/etc/fstab
+echo "/dev/sda2   /            ext4    noatime,discard      0 1" >  /mnt/gentoo/etc/fstab
+
 echo "= BUILDING UTILITIES ===================================================="
 chroot /mnt/gentoo /bin/bash<<EOF
 ln -s /etc/portage/make.conf /etc/make.conf
@@ -83,7 +85,7 @@ cp /config.gz /usr/src/linux
 cd /usr/src/linux
 gzip -d config
 mv config .config
-make -j16
+make -j${NPROCS}
 make modules_install
 make headers_install
 make install

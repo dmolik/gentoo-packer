@@ -1,4 +1,7 @@
 {
+	"variables": {
+		"procs": 4
+	},
 	"builders": [
 		{
 			"type": "virtualbox-iso",
@@ -19,18 +22,8 @@
 			"disk_size":   10000,
 			"headless" :   true,
 			"vboxmanage": [
-				[
-					"modifyvm",
-					"{{.Name}}",
-					"--memory",
-					8192
-				],
-				[
-					"modifyvm",
-					"{{.Name}}",
-					"--cpus",
-					16
-				]
+				[ "modifyvm", "{{.Name}}", "--memory",  8192              ],
+				[ "modifyvm", "{{.Name}}", "--cpus",   "{{user `procs`}}" ]
 			]
 		}
 	],
@@ -52,7 +45,9 @@
 		},
 		{
 			"type": "shell",
-			"environment_vars": [],
+			"environment_vars": [
+				"NPROCS={{user `procs`}}"
+			],
 			"scripts" : [
 				"scripts/install.sh",
 				"scripts/finish.sh"
