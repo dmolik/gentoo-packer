@@ -17,18 +17,19 @@
 			"ssh_password": "packer123",
 			"shutdown_command": "poweroff",
 			"disk_size":   10000,
+			"headless" :   true,
 			"vboxmanage": [
 				[
 					"modifyvm",
 					"{{.Name}}",
 					"--memory",
-					4096
+					8192
 				],
 				[
 					"modifyvm",
 					"{{.Name}}",
 					"--cpus",
-					4
+					16
 				]
 			]
 		}

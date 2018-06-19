@@ -33,7 +33,7 @@ CFLAGS="-march=native -O2 -pipe"
 CXXFLAGS="${CFLAGS}"
 ACCEPT_KEYWORDS="~*"
 
-MAKEOPTS="-j4"
+MAKEOPTS="-j16"
 
 LINGUAS="en en_US"
 L10N="en en_US"
@@ -75,23 +75,26 @@ eselect profile set 22
 emerge --sync
 emerge -1 dev-util/pkgconf
 emerge --rage-clean dev-libs/glib x11-misc/shared-mime-info
-emerge -vuND --with-bdeps=y -1 @world
+emerge -vuND --with-bdeps=y --job=4 -1 @world
 emerge @preserved-rebuild
 echo "sys-kernel/gentoo-sources symlink" >> /etc/portage/package.use/kernel
-emerge sys-apps/haveged net-misc/ntp net-misc/dhcpcd app-admin/sudo app-portage/eix app-text/tree sys-process/lsof sys-process/htop app-editors/vim dev-vcs/git sys-boot/grub app-admin/monit app-admin/rsyslog sys-kernel/gentoo-sources sys-process/vixie-cron logrotate
+emerge --jobs=4 sys-apps/haveged net-misc/ntp net-misc/dhcpcd app-admin/sudo app-portage/eix app-text/tree sys-process/lsof sys-process/htop app-editors/vim dev-vcs/git sys-boot/grub app-admin/monit app-admin/rsyslog sys-kernel/gentoo-sources sys-process/vixie-cron logrotate
 cp /config.gz /usr/src/linux
 cd /usr/src/linux
 gzip -d config
 mv config .config
-make -j4
+make -j16
 make modules_install
 make headers_install
 make install
 echo "set timeout=0" >> /etc/grub.d/40_custom
 grub-install /dev/sda
-grub2-mkconfig -o /boot/grub/grub.cfg
+grub-mkconfig -o /boot/grub/grub.cfg
 useradd -m -G users,wheel gentoo
-echo "gentoo:gentoo12345" | chpasswd
+chmod o+w /etc/sudoers
+echo "%wheel ALL=(ALL) ALL" >> /etc/sudoers
+chmod o-w /etc/sudoers
+echo "gentoo:Gentoo12345!" | chpasswd
 cd /etc/init.d
 ln -s net.lo net.eth0
 echo "modules=dhcpcd"   >> /etc/conf.d/net
