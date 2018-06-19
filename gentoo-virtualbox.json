@@ -1,6 +1,6 @@
 {
 	"variables": {
-		"procs": 4
+		"procs": "4"
 	},
 	"builders": [
 		{
