@@ -47,7 +47,7 @@ SYSTEM="threads jemalloc udev vim-syntax"
 SYSTEM="\${SYSTEM} jit pcre pcre-jit -bindist"
 SYSTEM="\${SYSTEM} uuid gmp audit"
 AUTH=""
-NET="curl json"
+NET="curl json openssl"
 NET="\${NET} -sslv3 -sslv2"
 
 LANGS="perl -python"
@@ -64,6 +64,17 @@ EOF
 cat > /mnt/gentoo/etc/locale.gen << EOF
 en_US ISO-8859-1
 en_US.UTF-8 UTF-8
+EOF
+
+mkdir -p /mnt/gentoo/etc/portage/package.use
+cat > /mnt/gentoo/etc/portage/package.use/system << EOF
+sys-kernel/gentoo-sources symlink
+add-admin/rsyslog -gnutls relp normalize
+dev-libs/librelp -gnutls
+
+net-misc/ntp parse-clocks
+
+dev-lang/perl ithreads
 EOF
 
 mv /tmp/config.gz /mnt/gentoo
