@@ -1,3 +1,4 @@
 output-virtualbox-iso/
+output-qemu/
 packer_cache/
 files/

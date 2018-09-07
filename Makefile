@@ -17,4 +17,8 @@ endif # $J
 gentoo:
 	[[ -d files ]] || mkdir  files
 	scripts/download.sh
-	packer build -var 'procs=$(NPROCS)' gentoo-virtualbox.json
+	packer build -var 'procs=$(NPROCS)' gentoo.json
+gentoo-qemu:
+	[[ -d files ]] || mkdir  files
+	scripts/download.sh
+	packer build -only=qemu -var 'procs=$(NPROCS)' gentoo.json

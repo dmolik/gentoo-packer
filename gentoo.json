@@ -1,0 +1,80 @@
+{
+	"variables": {
+		"procs": "4"
+	},
+	"builders": [
+		{
+			"type": "virtualbox-iso",
+			"boot_wait": "5s",
+			"boot_command": [
+				"<enter><wait8><wait8>",
+				"<enter><wait5><wait5><wait5>",
+				"passwd<enter><wait>",
+				"packer123<enter><wait>packer123<enter>"
+			],
+			"guest_os_type": "Gentoo_64",
+			"iso_url": "https://downloads.sourceforge.net/project/systemrescuecd/sysresccd-x86/5.3.0/systemrescuecd-x86-5.3.0.iso?r=https%3A%2F%2Fsourceforge.net%2Fprojects%2Fsystemrescuecd%2Ffiles%2Fsysresccd-x86%2F5.3.0%2Fsystemrescuecd-x86-5.3.0.iso%2Fdownload&ts=1536351525",
+			"iso_checksum": "1eb6edc88c744d60fce810d14cd82724c86ba5d1c3cd9270259f39f82ef589f3",
+			"iso_checksum_type": "sha256",
+			"ssh_username": "root",
+			"ssh_password": "packer123",
+			"shutdown_command": "poweroff",
+			"disk_size":   10000,
+			"headless" :   true,
+			"vboxmanage": [
+				[ "modifyvm", "{{.Name}}", "--memory",  8192              ],
+				[ "modifyvm", "{{.Name}}", "--cpus",   "{{user `procs`}}" ]
+			]
+		},
+		{
+			"type": "qemu",
+			"accelerator": "kvm",
+			"format": "qcow2",
+			"boot_wait": "5s",
+			"boot_command": [
+				"<enter><wait8><wait8>",
+				"<enter><wait5><wait5><wait5>",
+				"passwd<enter><wait>",
+				"packer123<enter><wait>packer123<enter>"
+			],
+			"iso_url": "https://downloads.sourceforge.net/project/systemrescuecd/sysresccd-x86/5.3.0/systemrescuecd-x86-5.3.0.iso?r=https%3A%2F%2Fsourceforge.net%2Fprojects%2Fsystemrescuecd%2Ffiles%2Fsysresccd-x86%2F5.3.0%2Fsystemrescuecd-x86-5.3.0.iso%2Fdownload&ts=1536351525",
+			"iso_checksum": "1eb6edc88c744d60fce810d14cd82724c86ba5d1c3cd9270259f39f82ef589f3",
+			"iso_checksum_type": "sha256",
+			"net_device": "virtio-net-pci",
+			"disk_interface": "virtio-scsi",
+			"ssh_username": "root",
+			"ssh_password": "packer123",
+			"shutdown_command": "poweroff",
+			"disk_size":   10000,
+			"headless" :   true
+
+		}
+	],
+	"provisioners": [
+		{
+			"type":        "file",
+			"source":      "files/stage3-amd64-nomultilib.tar.xz",
+			"destination": "/tmp/stage3-amd64-nomultilib.tar.xz"
+		},
+		{
+			"type":        "file",
+			"source":      "scripts/config.gz",
+			"destination": "/tmp/config.gz"
+		},
+		{
+			"type":        "file",
+			"source":      "files/portage-latest.tar.xz",
+			"destination": "/tmp/portage-lastest.tar.xz"
+		},
+		{
+			"type": "shell",
+			"environment_vars": [
+				"NPROCS={{user `procs`}}"
+			],
+			"scripts" : [
+				"scripts/install.sh",
+				"scripts/finish.sh"
+			]
+		}
+	]
+}
