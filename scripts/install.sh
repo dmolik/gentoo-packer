@@ -40,7 +40,7 @@ L10N="en en_US"
 PYTHON_TARGETS="python2_7 python3_6"
 PYTHON_SINGLE_TARGET="python3_6"
 POSTGRES_TARGETS="postgres10"
-
+GRUB_PLATFORMS="efi-64 pc qemu"
 CPU_FLAGS_X86="avx avx2 aes mmx sse sse2 ssse3 sse4_1 sse4_2"
 
 SYSTEM="threads jemalloc udev vim-syntax"
@@ -85,9 +85,9 @@ chroot /mnt/gentoo /bin/bash<<EOF
 ln -s /etc/portage/make.conf /etc/make.conf
 source /etc/profile
 eselect profile set 22
-emerge --sync
+
 emerge -1 dev-util/pkgconf
-emerge --rage-clean dev-libs/glib x11-misc/shared-mime-info
+
 emerge -vuND --with-bdeps=y --job=4 -1 @world
 emerge @preserved-rebuild
 echo "sys-kernel/gentoo-sources symlink" >> /etc/portage/package.use/kernel

@@ -32,10 +32,11 @@
 			"format": "qcow2",
 			"boot_wait": "5s",
 			"boot_command": [
-				"<enter><wait8><wait8>",
-				"<enter><wait5><wait5><wait5>",
-				"passwd<enter><wait>",
-				"packer123<enter><wait>packer123<enter>"
+				"<esc>",
+				"<wait>",
+				"rescue64 setkmap=us rootpass=packer123",
+				"<enter>",
+				"<wait10>"
 			],
 			"iso_url": "https://downloads.sourceforge.net/project/systemrescuecd/sysresccd-x86/5.3.0/systemrescuecd-x86-5.3.0.iso?r=https%3A%2F%2Fsourceforge.net%2Fprojects%2Fsystemrescuecd%2Ffiles%2Fsysresccd-x86%2F5.3.0%2Fsystemrescuecd-x86-5.3.0.iso%2Fdownload&ts=1536351525",
 			"iso_checksum": "1eb6edc88c744d60fce810d14cd82724c86ba5d1c3cd9270259f39f82ef589f3",
@@ -46,8 +47,12 @@
 			"ssh_password": "packer123",
 			"shutdown_command": "poweroff",
 			"disk_size":   10000,
-			"headless" :   true
-
+			"headless" :   true,
+			"qemuargs": [
+				[ "-cpu", "host"             ],
+				[ "-smp", "{{user `procs`}}" ],
+				[ "-m",    8192              ]
+			]
 		}
 	],
 	"provisioners": [
